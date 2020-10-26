@@ -1,0 +1,41 @@
+// 2006-03-24, Thorsten Schubert, OFFIS
+
+#ifndef QUINY_SYSTEMC_INCLUDED
+#define QUINY_SYSTEMC_INCLUDED
+
+#include "quiny_sc/sc_core/sc_module.hpp"
+#include "quiny_sc/sc_core/sc_port.hpp"
+#include "quiny_sc/sc_core/sc_in.hpp"
+#include "quiny_sc/sc_core/sc_out.hpp"
+#include "quiny_sc/sc_core/sc_signal.hpp"
+#include "quiny_sc/sc_core/sc_module_name.hpp"
+#include "quiny_sc/sc_core/sc_event.hpp"
+#include "quiny_sc/sc_core/sc_time.hpp"
+#include "quiny_sc/sc_core/sc_trace_file.hpp"
+#include "quiny_sc/sc_core/sc_core_functions.hpp"
+
+#include "quiny_sc/sc_dt/sc_int.hpp"
+#include "quiny_sc/sc_dt/sc_uint.hpp"
+#include "quiny_sc/sc_dt/sc_signed.hpp"
+#include "quiny_sc/sc_dt/sc_bigint.hpp"
+#include "quiny_sc/sc_dt/sc_unsigned.hpp"
+#include "quiny_sc/sc_dt/sc_biguint.hpp"
+#include "quiny_sc/sc_dt/sc_logic.hpp"
+#include "quiny_sc/sc_dt/sc_bv_base.hpp"
+#include "quiny_sc/sc_dt/sc_bv.hpp"
+#include "quiny_sc/sc_dt/sc_lv_base.hpp"
+#include "quiny_sc/sc_dt/sc_lv.hpp"
+#include "quiny_sc/sc_dt/sc_fxnum.hpp"
+#include "quiny_sc/sc_dt/sc_fix.hpp"
+#include "quiny_sc/sc_dt/sc_fixed.hpp"
+#include "quiny_sc/sc_dt/sc_ufix.hpp"
+#include "quiny_sc/sc_dt/sc_ufixed.hpp"
+
+#include "quiny_sc/cpp_dt/Bool.hpp"
+#include "quiny_sc/cpp_dt/Int.hpp"
+
+#include "quiny_sc/cpp_stmt/cpp_stmt.hpp"
+
+using namespace quiny_sc;
+
+#endif

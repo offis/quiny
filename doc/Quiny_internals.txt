@@ -1,0 +1,99 @@
+
+Build System
+============
+
+The whole build process is controlled by a single Makefile located in the top-
+level directory.
+
+The Makefile automatically infers its targets from the underlying directory 
+structure. It builds the cross product of:
+
+{Backends} ** {test cases} ** {SystemC, Quiny}
+
+Furthermore, separate targets for the Quiny library and each backend are 
+created. Simply type "make" in order to get a list of all available targets.
+
+The top-level Makefile will create sub makefiles in the build/ directory
+and then invoke these makefiles in order to make the specific target.
+No output files are written to the source directories. Intermediate object
+files will be placed in the build/ directory, resulting libraries in the
+lib/ directory and executable test cases in the sim/ directory. I.e. if
+something goes terribly wrong, a "rm -rf build lib sim" will remove all
+generated files.
+
+
+Source Structure
+================
+
+All header files have the ending .hpp (except for systemc and systemc.h) 
+and all source file have the ending .cpp.
+The directory structure follows the namespace structure.
+
+Bad news for those using 80 character terminals: the source is approx. 100
+characters wide.
+
+There are two top-level namespaces: quiny and quiny_sc. quiny_sc contains
+the SystemC classes as defined in the IEEE 1666 standard (at least that is the
+goal). The classes with the suffix _d are the "dagger" classes of the SystemC
+standard. In addition to the standard namespaces sc_core and sc_dt, there are 
+cpp_dt and cpp_stmt which help to manage C++ data types and statements.
+
+All the stuff within the namespace quiny is responsible for the generation of
+the intermediate represenation (IR). The namespace quiny has three sub 
+namespaces: collector, ir and utils.
+
+The collector manages the book keeping of everything that is created or 
+destroyed. It "collects" all information about the different objects -- hence 
+its name. The collector is the connection of the SystemC classes and the IR.
+
+The namespace ir contains the nodes of the intermediate representation.
+It is still quite incomplete and many classes are not yet used. The following
+classes are the most important base classes: Type, Expression, Statement, 
+StructuralObject and SimulationCommand.
+The IR can be traversed by the back-end via the Visitor Pattern (see. Gamma
+et al.). It makes extensive use of the smart pointer owner_ptr<T> and 
+observer_ptr<T> which are defined in the namespace utils.
+
+The namespace utils contains basic debug printing, the smart pointers
+(see owner_ptr.hpp for a more detailed description) and some helpers for the
+Visitor Pattern.
+
+Cyclic #includes are evil. Therefore the header files follow the following
+dependencies:
+
+       +-------------------+
+       |                   v
+SystemtC --> Collector---> Utils
+|            ^ ^ ^ ^ |     ^ ^
+|            | | | | |     | |
+|      sc_dt-+ | | | |     | |
+|    sc_core---+ | | |     | |
+|     cpp_dt-----+ | |     | |
+|   cpp_stmt-------+ |     | |
+|                    |     | |
+|      +-------------+     | |
+|      v                   | |
++---> IR-------------------+ |
+       ^                     |
+       |                     |
+    Backend X----------------+
+
+
+A--> B means: A uses B, or A is allowed to #include things from B.
+        
+SystemC actually comprises sc_dt, sc_core, cpp_dt and cpp_stmt.
+
+
+TODO
+====
+
+- Write a more extensive documentation
+- The IR is far too simple
+- The SystemC classes are incomplete
+- Use a better build system
+- Move SourcePos from collector to IR
+- Better handling of parent pointer in Statment and StructuralObject
+  - Currently the parent pointer must be set from the outside, because an 
+    observer_ptr can only be obtained from an owner_ptr, but the owner
+    is not known (it is most like part of the parent)
+  

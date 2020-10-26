@@ -1,0 +1,173 @@
+Quiny v0.2 [2006-09-18]
+=======================
+
+
+Quick Start
+-----------
+
+In order to get a first impression of Quiny in action it is probably best to
+bypass the whole build system:
+
+0. Unpack the Quiny sources. 
+   (If you are reading this you obviously completed this step)
+   
+   > cd ~/temp
+   > tar -xzf Quiny_0.2.tar.gz
+   > less Quiny_0.2/README
+
+1. Create a temporary work directory 
+
+   > mkdir quiny_test
+   > cd quiny_test
+   
+2. Compile a the Quiny libaray and the VHDL backend
+
+   > find ../Quiny_0.2/src ../Quiny_0.2/backends/vhdlgen/ -name '*.cpp' | xargs g++ -I ../Quiny_0.2/include -c
+
+3. Create a nice link library
+
+   > ar -r libsystemc.a *.o
+     
+4. Remove the object files
+
+   > rm *.o
+   
+5. Copy the counter test case
+
+   > cp ../Quiny_0.2/test/FDL06/002_counter/counter.cpp .
+
+6. Compile and link the example with Quiny+Backend-library
+
+   > g++ -I ../Quiny_0.2/include -L. -o counter_quiny counter.cpp -lsystemc
+   
+7. "Simulate"
+ 
+   > ./counter_quiny
+   
+   or
+   
+   > ./counter_quiny -QUINY_DEBUG
+   
+8. [optional] Try ModelSim
+
+   > ./counter_quiny > design.vhdl
+   
+   or
+   
+   > ./counter_quiny -QUINY_DEBUG > design.vhdl
+   
+   Note the file "sim.do"
+   
+   > vlib work
+   > vcom design.vhdl
+   > vsim -c -do sim.do
+   > vsim vsim.wlf
+   
+   
+9. [optional] Compile and link the exmaple with the original OSCI SystemC library    
+
+   > g++ -I $SYSTEMC_HOME/include -L$SYSTEMC_HOME/lib-linux -o counter_osci counter.cpp -lsystemc
+   > ./counter_osci
+   > vcd2wlf trace.vcd trace.wlf
+   > vsim trace.wlf
+      
+        
+This implementation has been tested under Linux using the following tools:
+
+* gcc 4.1.1
+* gnu make 3.80
+* SystemC 2.1.v1 (slightly patched for gcc 4.1.1)
+* ModelSim 6.1f
+
+
+Package
+-------
+
+.
+|
++-- AUTHORS       : List of contributing authors to Quiny
++-- COPYRIGHT     : The copyright text applicable to all sources in this 
+|                   package
++-- LICENCE       : The GNU lesser public licence                 
++-- README        : This file (note the self-reference)
++-- Makefile      : Makefile which handles the whole build-process
+|                   type "make" in order to get a list of all targets
+|                   Note: The SYSTEMC_HOME environment variable must be set
+|
++-- backends/     : Backends to be used in conjunction with Quiny
+|   |
+|   +-- null/     : Empty backend, necessary in order to create a complete
+|   |               executable (otherwise linking will fail). 
+|   |               This backend may also be used as template for a new, 
+|   |               user-defined backend
+|   +-- vhdlgen/  : A VHDL-generating backend. Traverses the IR and outputs
+|                   the corresponding VHDL to stdout. Furthermore a file 
+|                   called "sim.do" will be created. This file is a ModelSim
+|                   script containing the sc_trace and sc_start counterparts.
+|
++-- doc/          : Documentation of the Quiny internals.
+|
++-- include/      : Quiny include root (also when used as SystemC replacement)
+|   |
+|   +-- quiny/    : The Quiny library header files
+|   |   |
+|   |   +-- collector/  : Global bookkeeping
+|   |   +-- ir/         : The intermediate representation
+|   |   +-- utils/      : Debugging, smart pointers, visitor helpers. 
+|   |   |                 (header only)
+|   |   +-- helpers.hpp : Helpers for the intrusive mode
+|   |
+|   |
+|   +-- quiny_sc/ : Quiny's SystemC header files
+|   |   |
+|   |   +-- cpp_dt  : C++ replacement data types
+|   |   +-- cpp_stmt: Helpers for statements
+|   |   +-- sc_core : Standard SystemC namespace
+|   |   +-- sc_dt   : Standard SystemC namespace
+|   |
+|   +-- systemc   : Standard SystemC include
+|   +-- systemc.h : Standard SystemC include (with using)
+|
++-- scripts/      : Scripts for the build process
+|   |
+|   +-- CreateMakefile : Creates a vanilla makefile which should be understood
+|                        by any make (and a good example of what C-shell 
+|                        scripts should never be used for)
+|
++-- src/          : Source code (follows the include structure)
+|   |
+|   +-- quiny/    : The Quiny library source code
+|   |   |
+|   |   +-- collector/  
+|   |   +-- ir/     
+|   |   +-- main.cpp     : The main function of a Quiny executable    
+|   |
+|   |
+|   +-- quiny_sc/ : Quiny's SystemC sources
+|       |
+|       +-- cpp_dt  
+|       +-- cpp_stmt
+|       +-- sc_core 
+|       +-- sc_dt   
+|
++-- test          : Test cases
+    |
+    +-- FDL06/    : Examples for the FDL
+    |   |
+    |   +-- 001_pinapa  : An example taken from Moy05 (does not work with 
+    |   |                 Quiny, yet)
+    |   +-- 002_counter : A simple up-down counter
+    |   
+    +-- intern    : Internal tests
+        |
+        +-- 001_owner_observer_ptr  : Tests the smart pointers
+        +-- 002_types               : Tests TypeHelper
+
+
+For more information, you may want to have a look at the following paper:
+
+Thorsten Schubert, Wolfgang Nebel. "The Quiny SystemC Front End: 
+Self-Synthesising Designs", FDL 2006
+
+Note, that the implementation at hand is really prototypical and probably
+won't work for any other design than the given example.
